@@ -4,6 +4,7 @@ import numpy as np
 from sensor_msgs.msg import LaserScan
 from geometry_msgs.msg import Twist
 from simple_navigation_goals import simple_navigation_goals
+from rosgraph_msgs.msg import clock
 import sys
 import select
 import os
@@ -66,8 +67,30 @@ def callback(data):
         while erreur_x == 0:
             epoch = rospy.Time()
             print("The none moving time is : {} ".format(epoch))
-            if epoch >= 3:
-                nav_goals.go_to(-3.0, -1.0, 0.0)
+            sec = rospy.get_time()
+            print("Sec : {}".format(sec))
+            if i > 1:
+                i += 1
+                epocha = rospy.Time()
+                print("The none moving time is : {} ".format(epoch))
+                seca = rospy.get_time()
+                print("Sec : {}".format(sec))
+                if epocha >= epoch + 3 or seca >= sec + 3:
+                    print("Sec : {}".format(sec))
+                    nav_goals.go_to(-3.0, -1.0, 0.0)
+                else:
+                    # en attente
+                    twist = Twist()
+                    twist.linear.x = 0.0
+                    twist.linear.y = 0.0
+                    twist.linear.z = 0.0
+                    twist.angular.x = 0.0
+                    twist.angular.y = 0.0
+                    twist.angular.z = 0.0
+                    print("En attente .. ")
+                    pub.publish(twist)
+            else:
+                i += 1
 
                 # cmd_vel(erreur_x * k_l,erreur_y * k_r ) # to_do envoyer ces vitesses en s'inspirant du teleop_key
     else:
@@ -79,6 +102,7 @@ def callback(data):
         twist.angular.x = 0.0
         twist.angular.y = 0.0
         twist.angular.z = 0.0
+        pub.publish(twist)
 
 
 def listener():
@@ -104,6 +128,10 @@ if __name__ == "__main__":
     rospy.loginfo("Initializations done")
 
     rospy.on_shutdown(nav_goals._shutdown)
+
+    # test le temps
+    sec = rospy.get_time()
+    print("Sec : {}".format(sec))
 
     status = 0
     target_linear_vel = 0.0
