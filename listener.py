@@ -3,6 +3,7 @@ import rospy
 import numpy as np
 from sensor_msgs.msg import LaserScan
 from geometry_msgs.msg import Twist
+from simple_navigation_goals import simple_navigation_goals
 import sys
 import select
 import os
@@ -24,7 +25,7 @@ def callback(data):
             angle = angle_min + angle_increment * i
             x = data.ranges[i] * np.cos(angle)
             y = data.ranges[i] * np.sin(angle)
-            if x > 0.5 and x < 1 and y > -0.5 and y < 0.5:
+            if x > 0.2 and x < 1 and y > -0.5 and y < 0.5:
                 datax.append(x)
                 datay.append(y)
     x_moy = 0
@@ -44,8 +45,8 @@ def callback(data):
         erreur_y = (
             y_moy - 0
         )  # si erreur_y est et positif il faut tourner vers la gauche et si erreur_y et negatif il faut tourner vers la droite
-        k_l = 1
-        k_r = 1
+        k_l = 3.75
+        k_r = 2.5
         input_x = erreur_x * k_l
         input_rot = erreur_y * k_r
         twist = Twist()
@@ -59,7 +60,15 @@ def callback(data):
 
         pub.publish(twist)
 
-    # cmd_vel(erreur_x * k_l,erreur_y * k_r ) # to_do envoyer ces vitesses en s'inspirant du teleop_key
+        # Test if the robot is still moving
+        # the purpose is to stop following it after 3s of none moving
+        while(erreur_x == 0):
+            epoch = rospy.Time()
+            print("The none moving time is : {} "format(epoch))
+            if(epoch >= 3):
+                nav_goals.go_to(-3.0, -1.0, 0.0)
+
+                # cmd_vel(erreur_x * k_l,erreur_y * k_r ) # to_do envoyer ces vitesses en s'inspirant du teleop_key
     else:
         rospy.loginfo("item lost !!!!!")
         twist = Twist()
@@ -88,6 +97,12 @@ def listener():
 
 if __name__ == "__main__":
     pub = rospy.Publisher("cmd_vel", Twist, queue_size=10)
+
+    rospy.loginfo("SimpleNavigationGoals Initialization")
+    nav_goals = simple_navigation_goals.SimpleNavigationGoals()
+    rospy.loginfo("Initializations done")
+
+    rospy.on_shutdown(nav_goals._shutdown)
 
     status = 0
     target_linear_vel = 0.0
