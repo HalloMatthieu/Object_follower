@@ -1,13 +1,14 @@
 #!/usr/bin/env python
+
 import rospy
 import numpy as np
 from sensor_msgs.msg import LaserScan
 from geometry_msgs.msg import Twist
 from simple_navigation_goals import simple_navigation_goals
-from rosgraph_msgs.msg import clock
 import sys
 import select
 import os
+import time
 
 
 def callback(data):
@@ -64,19 +65,13 @@ def callback(data):
 
         # Test if the robot is still moving
         # the purpose is to stop following it after 3s of none moving
+        i = 0
         while erreur_x == 0:
-            epoch = rospy.Time()
-            print("The none moving time is : {} ".format(epoch))
-            sec = rospy.get_time()
-            print("Sec : {}".format(sec))
-            if i > 1:
+            t0 = time.time()
+            print("Sec : {}".format(t0))
+            if i >= 1:
                 i += 1
-                epocha = rospy.Time()
-                print("The none moving time is : {} ".format(epoch))
-                seca = rospy.get_time()
-                print("Sec : {}".format(sec))
-                if epocha >= epoch + 3 or seca >= sec + 3:
-                    print("Sec : {}".format(sec))
+                if time.time() - t0 >= 3:
                     nav_goals.go_to(-3.0, -1.0, 0.0)
                 else:
                     # en attente
@@ -121,6 +116,8 @@ def listener():
 
 
 if __name__ == "__main__":
+
+    rospy.init_node("listener")
     pub = rospy.Publisher("cmd_vel", Twist, queue_size=10)
 
     rospy.loginfo("SimpleNavigationGoals Initialization")

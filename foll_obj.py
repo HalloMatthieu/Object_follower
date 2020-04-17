@@ -4,7 +4,7 @@ import rospy
 from sensor_msgs.msg import Image, RegionOfInterest, CameraInfo
 from geometry_msgs.msg import Twist
 from math import copysign, isnan
-from cv2 import cv
+import cv2
 from cv_bridge import CvBridge, CvBridgeError
 import numpy as np
 import thread
@@ -15,7 +15,7 @@ class ObjectFollower:
         rospy.init_node("object_follower")
 
         # set the shutdonw function to stop the robot
-        rospy.on_shutdown(self.shutdonw)
+        rospy.on_shutdown(self.shutdown)
 
         # set the robot's motion update
         self.rate = rospy.get_param("rate", 10)
