@@ -40,15 +40,16 @@ def callback(data):
         rospy.loginfo("x={}, y ={}".format(x_moy, y_moy))
         # on veut ramener le baricentre vers la zone d'interet : x = 0.75 et y = 0
         erreur_x = (
-            x_moy - 0.5
+            x_moy - 0.25
         )  # si erreur_x est positif on veut avancer et si erreur_x et negatif on veut reculer
         erreur_y = (
             y_moy - 0
         )  # si erreur_y est et positif il faut tourner vers la gauche et si erreur_y et negatif il faut tourner vers la droite
-        k_l = 3.75
+        k_l = 1
         k_r = 2.5
         input_x = erreur_x * k_l
         input_rot = erreur_y * k_r
+
         twist = Twist()
 
         twist.linear.x = input_x
@@ -62,10 +63,10 @@ def callback(data):
 
         # Test if the robot is still moving
         # the purpose is to stop following it after 3s of none moving
-        while(erreur_x == 0):
+        while erreur_x == 0:
             epoch = rospy.Time()
-            print("The none moving time is : {} "format(epoch))
-            if(epoch >= 3):
+            print("The none moving time is : {} ".format(epoch))
+            if epoch >= 3:
                 nav_goals.go_to(-3.0, -1.0, 0.0)
 
                 # cmd_vel(erreur_x * k_l,erreur_y * k_r ) # to_do envoyer ces vitesses en s'inspirant du teleop_key
