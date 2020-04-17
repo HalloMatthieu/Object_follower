@@ -39,10 +39,10 @@ def callback(data):
         rospy.loginfo("x={}, y ={}".format(x_moy, y_moy))
         # on veut ramener le baricentre vers la zone d'interet : x = 0.75 et y = 0
         erreur_x = (
-            0.75 - x
+            x_moy - 0.5
         )  # si erreur_x est positif on veut avancer et si erreur_x et negatif on veut reculer
         erreur_y = (
-            0 - y
+            y_moy - 0
         )  # si erreur_y est et positif il faut tourner vers la gauche et si erreur_y et negatif il faut tourner vers la droite
         k_l = 1
         k_r = 1
@@ -52,20 +52,23 @@ def callback(data):
 
         twist.linear.x = input_x
         twist.linear.y = 0.0
-        twist.linear.z = input_rot
+        twist.linear.z = 0.0
+        twist.angular.x = 0.0
+        twist.angular.y = 0.0
+        twist.angular.z = input_rot
 
         pub.publish(twist)
 
     # cmd_vel(erreur_x * k_l,erreur_y * k_r ) # to_do envoyer ces vitesses en s'inspirant du teleop_key
     else:
         rospy.loginfo("item lost !!!!!")
-
-
-def vels(target_linear_vel, target_angular_vel):
-    return "currently:\tlinear vel %s\t angular vel %s " % (
-        target_linear_vel,
-        target_angular_vel,
-    )
+        twist = Twist()
+        twist.linear.x = 0.0
+        twist.linear.y = 0.0
+        twist.linear.z = 0.0
+        twist.angular.x = 0.0
+        twist.angular.y = 0.0
+        twist.angular.z = 0.0
 
 
 def listener():
@@ -84,7 +87,6 @@ def listener():
 
 
 if __name__ == "__main__":
-    rospy.init_node("listerner")
     pub = rospy.Publisher("cmd_vel", Twist, queue_size=10)
 
     status = 0
