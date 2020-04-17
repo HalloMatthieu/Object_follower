@@ -62,14 +62,6 @@ class FollowObject:
         #     rospy.logwarn("hmi_wrapper NOT SPECIFIED")
         # self.hmi = hmi_wrapper
 
-    def update_scan(self, data):
-        self.scan = data
-        # self.scan.ranges = round(self.scan.ranges, 4)
-        self.scan.angle_min = -0.21
-        self.scan.angle_max = 0.21
-        self.scan.range_min = 1.5
-        self.scan.range.max = 2.5
-
     def _shutdown(self):
         rospy.loginfo("Cancel all")
         self.move_base.cancel_all_goals()
@@ -424,6 +416,15 @@ class FollowObject:
             self.goal.target_pose.pose.orientation.w = quat[3]
 
         self.move_base.send_goal(self.goal)
+
+
+def update_scan(self, msg):
+    self.scan = FollowObject(msg.ranges)
+    # self.scan.ranges = round(self.scan.ranges, 4)
+    self.scan.angle_min = -0.21
+    self.scan.angle_max = 0.21
+    self.scan.range_min = 1.5
+    self.scan.range.max = 2.5
 
 
 if __name__ == "__main__":
