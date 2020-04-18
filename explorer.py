@@ -6,6 +6,7 @@
 
 import rospy
 import actionlib
+import TurtleBotMap
 from move_base_msgs.msg import MoveBaseAction
 from move_base_msgs.msg import MoveBaseActionGoal
 from move_base_msgs.msg import MoveBaseGoal
@@ -20,24 +21,9 @@ from math import pi, cos, sin, isnan
 from TurtleBotMap import *
 from geometry_msgs.msg import Twist
 
-import scipy.misc
+
+from scipy import misc
 import numpy as np
-
-rospy.init_node("explore_client")
-client = actionlib.SimpleActionClient("move_base", MoveBaseAction)
-client.wait_for_server()
-
-listener = tf.TransformListener()
-
-cmd_vel = rospy.Publisher("cmd_vel", Twist, queue_size=10)
-
-
-# Some global defintions
-
-
-goal_number = 0
-target_frame = "map"
-base_link = "base_link"
 
 
 def reach_goal(x, y, theta):
@@ -91,7 +77,7 @@ def rotate(vitesse=1):
     while timer < 2 * pi / vitesse:
         cmd_vel.publish(twist)
         rate.sleep()
-        timer = timer + 0.1  # Fréquence de 10 Hz donc 0.1 secondes
+        timer = timer + 0.1  # Frequence de 10 Hz donc 0.1 secondes
     print("Fin de rotation")
 
 
@@ -104,7 +90,7 @@ def rotate(vitesse=1):
 # We now start the controller and should in principle run the node
 # until no reachable locations remain unknown
 # (i.e. there will be no unknown places next to a known free place)
-# Retourne "True" si le pixel (x,y) est adjacent à une bordure et est dans la zone accessible
+# Retourne "True" si le pixel (x,y) est adjacent a une bordure et est dans la zone accessible
 def is_free(x, y):
     width = metadata[0]
     if mapData[x * width + y] == -2:
@@ -114,23 +100,23 @@ def is_free(x, y):
                     if (
                         mapData[(x + k) * width + (y + l)] == -1
                     ):  # Si une de ces cellules adjacentes est inconnue
-                        print("Bordure trouvée")
+                        print("Bordure trouvee")
                         return True
     else:
         return False
 
 
-# Retourne "True" si le pixel (x,y) est accessible par le robot (situé à un rayon donné des murs)
+# Retourne "True" si le pixel (x,y) est accessible par le robot (situe a un rayon donne des murs)
 
 
 def is_accessible(
     x, y, rayon_inflate=4
-):  # Renvoie True si l'on n'est pas près d'un mur
+):  # Renvoie True si l'on n'est pas pres d'un mur
     width = metadata[0]
     if mapData[x * width + y] == 0:
         for m in range(
             -rayon_inflate, rayon_inflate + 1
-        ):  # On regarde si l'on n'est pas près d'un mur (costmap)
+        ):  # On regarde si l'on n'est pas pres d'un mur (costmap)
             for n in range(-rayon_inflate, rayon_inflate + 1):
                 if mapData[(x + m) * width + (y + n)] == 100:
                     return False
@@ -138,7 +124,7 @@ def is_accessible(
     return False
 
 
-def remplissage_diff():  # Diffuse la zone d'accessibilité en prenant en compte l'espacement des murs
+def remplissage_diff():  # Diffuse la zone d'accessibilite en prenant en compte l'espacement des murs
     pile = []
     x_robot = pose_in_im[0]  # Position du robot
     y_robot = pose_in_im[1]
@@ -150,7 +136,7 @@ def remplissage_diff():  # Diffuse la zone d'accessibilité en prenant en compte
         [x, y] = pile.pop()
         width = metadata[0]
         height = metadata[1]
-        # La valeur arbitraire "-2" correspond à une zone accessible pour le robot
+        # La valeur arbitraire "-2" correspond a une zone accessible pour le robot
         mapData[x * width + y] = -2
         for k in range(-1, 2):
             for l in range(
@@ -159,7 +145,7 @@ def remplissage_diff():  # Diffuse la zone d'accessibilité en prenant en compte
                 if k != 0 or l != 0:
                     if is_accessible(x + k, y + l):
                         pile.append([x + k, y + l])
-    print("Analyse terminée")
+    print("Analyse terminee")
     return
 
 
@@ -189,17 +175,6 @@ def find_ppv(rayon=10):  # Cherche le plus proche voisin libre
                         return (x_robot + i, y_robot - rayon)
         rayon = rayon + 1
     return (float("nan"), float("nan"))
-
-
-turtlebot_map = TurtleBotMap(target_frame, base_link, listener)
-(metadata, mapData) = turtlebot_map.get_map()
-pose_in_im = turtlebot_map.get_image_pose()
-rotate()
-
-
-# (metadata,pose_origin,pose_robot,pose_in_im,pose_in_map,copyData,image_array)=get_map_data()
-remplissage_diff()
-(x_im, y_im) = find_ppv()
 
 
 def whenshutdown():
@@ -235,16 +210,41 @@ def whenshutdown():
     scipy.misc.imsave("map.png", image_array)
 
 
-rospy.on_shutdown(whenshutdown)
+if __name__ == "__main__":
 
-while not (isnan(x_im) and isnan(y_im)) and not rospy.is_shutdown():
-    (x, y, theta) = turtlebot_map.pix_to_pose((x_im, y_im, 0))
-    print(x, y, theta)
+    rospy.init_node("explore_client")
+    client = actionlib.SimpleActionClient("move_base", MoveBaseAction)
+    client.wait_for_server()
 
-    reach_goal(x, y, theta)
-    rotate()
+    listener = tf.TransformListener()
+
+    cmd_vel = rospy.Publisher("cmd_vel", Twist, queue_size=10)
+
+    # Some global defintions
+
+    goal_number = 0
+    target_frame = "map"
+    base_link = "base_link"
+
+    turtlebot_map = TurtleBotMap(target_frame, base_link, listener)
     (metadata, mapData) = turtlebot_map.get_map()
     pose_in_im = turtlebot_map.get_image_pose()
+    rotate()
 
+    # (metadata,pose_origin,pose_robot,pose_in_im,pose_in_map,copyData,image_array)=get_map_data()
     remplissage_diff()
     (x_im, y_im) = find_ppv()
+
+    rospy.on_shutdown(whenshutdown)
+
+    while not (isnan(x_im) and isnan(y_im)) and not rospy.is_shutdown():
+        (x, y, theta) = turtlebot_map.pix_to_pose((x_im, y_im, 0))
+        print(x, y, theta)
+
+        reach_goal(x, y, theta)
+        rotate()
+        (metadata, mapData) = turtlebot_map.get_map()
+        pose_in_im = turtlebot_map.get_image_pose()
+
+        remplissage_diff()
+        (x_im, y_im) = find_ppv()
