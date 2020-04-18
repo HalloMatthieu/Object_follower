@@ -226,6 +226,21 @@ if __name__ == "__main__":
     target_frame = "map"
     base_link = "base_link"
 
+    # First goal : turn around to scan the surroundings
+    t0 = rospy.Time(0)
+    listener.waitForTransform("map", base_link, t0, rospy.Duration(1))
+    ((x, y, z), rot) = listener.lookupTransform("map", base_link, t0)
+    euler = tf.transformations.euler_from_quaternion(rot)
+    reach_goal(x, y, euler[2] + pi)
+    print("G0 done")
+
+    t0 = rospy.Time(0)
+    listener.waitForTransform("map", base_link, t0, rospy.Duration(1))
+    ((x, y, z), rot) = listener.lookupTransform("map", base_link, t0)
+    euler = tf.transformations.euler_from_quaternion(rot)
+    reach_goal(x, y, euler[2] + pi)
+    print("G1 done")
+
     turtlebot_map = TurtleBotMap(target_frame, base_link, listener)
     (metadata, mapData) = turtlebot_map.get_map()
     pose_in_im = turtlebot_map.get_image_pose()
