@@ -4,7 +4,8 @@ import rospy
 import numpy as np
 from sensor_msgs.msg import LaserScan
 from geometry_msgs.msg import Twist
-from simple_navigation_goals import simple_navigation_goals
+
+# from simple_navigation_goals import simple_navigation_goals
 import sys
 import select
 import os
@@ -120,9 +121,9 @@ if __name__ == "__main__":
     rospy.init_node("listener")
     pub = rospy.Publisher("cmd_vel", Twist, queue_size=10)
 
-    rospy.loginfo("SimpleNavigationGoals Initialization")
-    nav_goals = simple_navigation_goals.SimpleNavigationGoals()
-    rospy.loginfo("Initializations done")
+    # rospy.loginfo("SimpleNavigationGoals Initialization")
+    # nav_goals = simple_navigation_goals.SimpleNavigationGoals()
+    # rospy.loginfo("Initializations done")
 
     rospy.on_shutdown(nav_goals._shutdown)
 
