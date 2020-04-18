@@ -7,6 +7,7 @@
 import rospy
 import actionlib
 import TurtleBotMap
+import traceback
 from move_base_msgs.msg import MoveBaseAction
 from move_base_msgs.msg import MoveBaseActionGoal
 from move_base_msgs.msg import MoveBaseGoal
@@ -211,55 +212,61 @@ def whenshutdown():
 
 
 if __name__ == "__main__":
+    try:
+        rospy.init_node("explore_client")
+        client = actionlib.SimpleActionClient("move_base", MoveBaseAction)
+        client.wait_for_server()
 
-    rospy.init_node("explore_client")
-    client = actionlib.SimpleActionClient("move_base", MoveBaseAction)
-    client.wait_for_server()
+        listener = tf.TransformListener()
 
-    listener = tf.TransformListener()
+        cmd_vel = rospy.Publisher("cmd_vel", Twist, queue_size=10)
 
-    cmd_vel = rospy.Publisher("cmd_vel", Twist, queue_size=10)
+        # Some global defintions
 
-    # Some global defintions
+        goal_number = 0
+        target_frame = "map"
+        base_link = "base_link"
 
-    goal_number = 0
-    target_frame = "map"
-    base_link = "base_link"
+        # First goal : turn around to scan the surroundings
+        t0 = rospy.Time(0)
+        listener.waitForTransform("map", base_link, t0, rospy.Duration(1))
+        ((x, y, z), rot) = listener.lookupTransform("map", base_link, t0)
+        euler = tf.transformations.euler_from_quaternion(rot)
+        reach_goal(x, y, euler[2] + pi)
+        print("G0 done")
 
-    # First goal : turn around to scan the surroundings
-    t0 = rospy.Time(0)
-    listener.waitForTransform("map", base_link, t0, rospy.Duration(1))
-    ((x, y, z), rot) = listener.lookupTransform("map", base_link, t0)
-    euler = tf.transformations.euler_from_quaternion(rot)
-    reach_goal(x, y, euler[2] + pi)
-    print("G0 done")
+        t0 = rospy.Time(0)
+        listener.waitForTransform("map", base_link, t0, rospy.Duration(1))
+        ((x, y, z), rot) = listener.lookupTransform("map", base_link, t0)
+        euler = tf.transformations.euler_from_quaternion(rot)
+        reach_goal(x, y, euler[2] + pi)
+        print("G1 done")
 
-    t0 = rospy.Time(0)
-    listener.waitForTransform("map", base_link, t0, rospy.Duration(1))
-    ((x, y, z), rot) = listener.lookupTransform("map", base_link, t0)
-    euler = tf.transformations.euler_from_quaternion(rot)
-    reach_goal(x, y, euler[2] + pi)
-    print("G1 done")
-
-    turtlebot_map = TurtleBotMap(target_frame, base_link, listener)
-    (metadata, mapData) = turtlebot_map.get_map()
-    pose_in_im = turtlebot_map.get_image_pose()
-    rotate()
-
-    # (metadata,pose_origin,pose_robot,pose_in_im,pose_in_map,copyData,image_array)=get_map_data()
-    remplissage_diff()
-    (x_im, y_im) = find_ppv()
-
-    rospy.on_shutdown(whenshutdown)
-
-    while not (isnan(x_im) and isnan(y_im)) and not rospy.is_shutdown():
-        (x, y, theta) = turtlebot_map.pix_to_pose((x_im, y_im, 0))
-        print(x, y, theta)
-
-        reach_goal(x, y, theta)
-        rotate()
+        turtlebot_map = TurtleBotMap(target_frame, base_link, listener)
         (metadata, mapData) = turtlebot_map.get_map()
         pose_in_im = turtlebot_map.get_image_pose()
+        rotate()
 
+        # (metadata,pose_origin,pose_robot,pose_in_im,pose_in_map,copyData,image_array)=get_map_data()
         remplissage_diff()
         (x_im, y_im) = find_ppv()
+
+        rospy.on_shutdown(whenshutdown)
+
+        while not (isnan(x_im) and isnan(y_im)) and not rospy.is_shutdown():
+            (x, y, theta) = turtlebot_map.pix_to_pose((x_im, y_im, 0))
+            print(x, y, theta)
+
+            reach_goal(x, y, theta)
+            rotate()
+            (metadata, mapData) = turtlebot_map.get_map()
+            pose_in_im = turtlebot_map.get_image_pose()
+
+            remplissage_diff()
+            (x_im, y_im) = find_ppv()
+        rospy.spin()
+
+    except rospy.ROSInterruptException:
+        rospy.logerr(traceback.format_exc())
+
+    rospy.loginfo("explorer node terminated.")
