@@ -5,11 +5,12 @@ import numpy as np
 from sensor_msgs.msg import LaserScan
 from geometry_msgs.msg import Twist
 
-# from simple_navigation_goals import simple_navigation_goals
+from simple_navigation_goals import simple_navigation_goals
 import sys
 import select
 import os
 import time
+import traceback
 
 
 def callback(data):
@@ -73,7 +74,7 @@ def callback(data):
             if i >= 1:
                 i += 1
                 if time.time() - t0 >= 3:
-                    nav_goals.go_to(-3.0, -1.0, 0.0)
+                    nav_goals.go_to(0.0, 0.0, 0.0)
                 else:
                     # en attente
                     twist = Twist()
@@ -100,6 +101,8 @@ def callback(data):
         twist.angular.z = 0.0
         pub.publish(twist)
 
+        rospy.spin()
+
 
 def listener():
 
@@ -108,7 +111,7 @@ def listener():
     # anonymous=True flag means that rospy will choose a unique
     # name for our 'listener' node so that multiple listeners can
     # run simultaneously.
-    rospy.init_node("listener", anonymous=True)
+    rospy.init_node("listener", anonymous=False)
 
     rospy.Subscriber("/scan", LaserScan, callback)
 
@@ -117,31 +120,29 @@ def listener():
 
 
 if __name__ == "__main__":
-
-    rospy.init_node("listener")
-    pub = rospy.Publisher("cmd_vel", Twist, queue_size=10)
-
-    # rospy.loginfo("SimpleNavigationGoals Initialization")
-    # nav_goals = simple_navigation_goals.SimpleNavigationGoals()
-    # rospy.loginfo("Initializations done")
-
-    rospy.on_shutdown(nav_goals._shutdown)
-
-    # test le temps
-    sec = rospy.get_time()
-    print("Sec : {}".format(sec))
-
-    status = 0
-    target_linear_vel = 0.0
-    target_angular_vel = 0.0
-    control_linear_vel = 0.0
-    control_angular_vel = 0.0
-
     try:
+        rospy.init_node("listener")
+        pub = rospy.Publisher("cmd_vel", Twist, queue_size=10)
+
+        rospy.loginfo("SimpleNavigationGoals Initialization")
+        nav_goals = simple_navigation_goals.SimpleNavigationGoals()
+        rospy.loginfo("Initializations done")
+
+        rospy.on_shutdown(nav_goals._shutdown)
+
+        # test le temps
+        sec = rospy.get_time()
+        print("Sec : {}".format(sec))
+
+        status = 0
+        target_linear_vel = 0.0
+        target_angular_vel = 0.0
+        control_linear_vel = 0.0
+        control_angular_vel = 0.0
+
         while 1:
             listener()
 
-    finally:
         twist = Twist()
         twist.linear.x = 0.0
         twist.linear.y = 0.0
@@ -150,3 +151,9 @@ if __name__ == "__main__":
         twist.angular.y = 0.0
         twist.angular.z = 0.0
         pub.publish(twist)
+
+        rospy.spin()
+
+    except rospy.ROSInterruptException:
+        rospy.logerr(traceback.format_exc())
+    rospy.loginfo("Listener node done")
