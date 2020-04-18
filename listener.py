@@ -68,6 +68,7 @@ def callback(data):
         # Test if the robot is still moving
         # the purpose is to stop following it after 3s of none moving
         i = 0
+        print("valeur de l'erreur en x : {} et valeur de i : {}".format(erreur_x, i))
         while erreur_x == 0:
             t0 = time.time()
             print("Sec : {}".format(t0))
