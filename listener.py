@@ -29,7 +29,7 @@ def callback(data):
             angle = angle_min + angle_increment * i
             x = data.ranges[i] * np.cos(angle)
             y = data.ranges[i] * np.sin(angle)
-            if x > 0.2 and x < 1 and y > -0.5 and y < 0.5:
+            if x > 0.2 and x < 1 and y > -0.25 and y < 0.25:
                 datax.append(x)
                 datay.append(y)
     x_moy = 0
@@ -128,6 +128,8 @@ if __name__ == "__main__":
         rospy.loginfo("SimpleNavigationGoals Initialization")
         nav_goals = simple_navigation_goals.SimpleNavigationGoals()
         rospy.loginfo("Initializations done")
+
+        client.wait_for_server()
 
         rospy.on_shutdown(nav_goals._shutdown)
 
