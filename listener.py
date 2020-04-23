@@ -13,6 +13,8 @@ import time
 import traceback
 import actionlib
 from move_base_msgs.msg import MoveBaseAction
+from TurtleBotMap import *
+from explorer import *
 
 
 def callback(data):
@@ -71,12 +73,14 @@ def callback(data):
         # the purpose is to stop following it after 3s of none moving
         i = 0
         print("valeur de l'erreur en x : {} et valeur de i : {}".format(erreur_x, i))
-        while erreur_x == 0.001:
+        while erreur_x <= 0.001:
             t0 = rospy.get_rostime()
             print("Sec : {}".format(t0))
             if i >= 1:
                 i += 1
                 if rospy.get_rostime() - t0 >= 3:
+                    rotate()
+                    remplissage_diff()
                     nav_goals.go_to(0.0, 0.0, 0.0)
                 else:
                     # en attente
