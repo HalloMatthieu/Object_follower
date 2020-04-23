@@ -75,7 +75,8 @@ def callback(data):
         t0 = rospy.get_time()
         t_debut = t0
         print("valeur de l'erreur en x : {} et valeur de i : {}".format(erreur_x, i))
-        while erreur_x <= 0.001:
+        while input_x <= 0.001 and input_rot <= 0.001:
+            rospy.sleep(0.01)
             print("Sec : {}".format(t0))
             dt = rospy.Duration.from_sec(3)
             d = dt.to_sec()
