@@ -16,3 +16,8 @@ the main idea is :
 to use explorer.py, make sure you have TurtleBotMap in your src folder
 install scipy using "python -m pip install --user numpy scipy matplotlib ipython jupyter pandas sympy nose"
 usefull : https://scipy.org/install.html#pip-install
+
+# how to use :
+- If you would like to explore the map and to make a slam, you can use explorer.py (make sure you installed scipy cf. installation and you downloaded TurtleBotMap in your catkin_ws/src)
+- If you would like to follow an object, please use listerner.py (make sure you installed scipy and downloaded explorer.py and TurtleBotMap.py)
+- If you would like to have a fully autonomus robot, you can use final.py (same recommendations as behind)
