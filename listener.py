@@ -11,6 +11,8 @@ import select
 import os
 import time
 import traceback
+import actionlib
+from move_base_msgs.msg import MoveBaseAction
 
 
 def callback(data):
@@ -129,6 +131,7 @@ if __name__ == "__main__":
         nav_goals = simple_navigation_goals.SimpleNavigationGoals()
         rospy.loginfo("Initializations done")
 
+        client = actionlib.SimpleActionClient("move_base", MoveBaseAction)
         client.wait_for_server()
 
         rospy.on_shutdown(nav_goals._shutdown)
