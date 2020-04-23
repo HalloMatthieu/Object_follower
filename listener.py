@@ -4,7 +4,7 @@ import rospy
 import numpy as np
 from sensor_msgs.msg import LaserScan
 from geometry_msgs.msg import Twist
-import TurtlebotMap
+import TurtleBotMap
 import explorer
 from simple_navigation_goals import simple_navigation_goals
 import sys
@@ -93,7 +93,7 @@ def callback(data):
                 )
                 if t_now - t_debut >= d:
                     # if rospy.Timer(rospy.Duration(3), my_callback) is True:
-                    rotate()
+                    # rotate()
                     remplissage_diff()
                     nav_goals.go_to(-3.0, 1.0, 0.0)
                 else:
