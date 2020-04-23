@@ -2,9 +2,6 @@
 
 import rospy
 import actionlib
-import TurtleBotMap.py
-import listener.py
-import explorer.py
 import traceback
 from simple_navigation_goals import simple_navigation_goals
 from TutleBotMap import *
