@@ -4,7 +4,8 @@ import rospy
 import numpy as np
 from sensor_msgs.msg import LaserScan
 from geometry_msgs.msg import Twist
-
+import TurtlebotMap
+import explorer
 from simple_navigation_goals import simple_navigation_goals
 import sys
 import select
