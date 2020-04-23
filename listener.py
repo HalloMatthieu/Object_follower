@@ -67,7 +67,7 @@ def callback(data):
         twist.angular.y = 0.0
         twist.angular.z = input_rot
 
-        pub.publish(twist)
+        cmd_vel.publish(twist)
 
         # Test if the robot is still moving
         # the purpose is to stop following it after 3s of none moving
@@ -105,7 +105,7 @@ def callback(data):
                     twist.angular.y = 0.0
                     twist.angular.z = 0.0
                     print("En attente .. ")
-                    pub.publish(twist)
+                    cmd_vel.publish(twist)
             else:
                 i += 1
 
@@ -145,7 +145,8 @@ def listener():
 if __name__ == "__main__":
     try:
         rospy.init_node("listener")
-        pub = rospy.Publisher("cmd_vel", Twist, queue_size=10)
+        # pub = rospy.Publisher("cmd_vel", Twist, queue_size=10)
+        cmd_vel = rospy.Publisher("cmd_vel", Twist, queue_size=10)
 
         rospy.loginfo("SimpleNavigationGoals Initialization")
         nav_goals = simple_navigation_goals.SimpleNavigationGoals()
@@ -176,7 +177,7 @@ if __name__ == "__main__":
         twist.angular.x = 0.0
         twist.angular.y = 0.0
         twist.angular.z = 0.0
-        pub.publish(twist)
+        cmd_vel.publish(twist)
 
         rospy.spin()
 
