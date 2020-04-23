@@ -70,11 +70,11 @@ def callback(data):
         i = 0
         print("valeur de l'erreur en x : {} et valeur de i : {}".format(erreur_x, i))
         while erreur_x == 0:
-            t0 = time.time()
+            t0 = rospy.get_rostime()
             print("Sec : {}".format(t0))
             if i >= 1:
                 i += 1
-                if time.time() - t0 >= 3:
+                if rospy.get_rostime() - t0 >= 3:
                     nav_goals.go_to(0.0, 0.0, 0.0)
                 else:
                     # en attente

@@ -54,20 +54,6 @@ def reach_goal(x, y, theta):
     return client.get_result()
 
 
-# First goal : turn around to scan the surroundings
-# t0 = rospy.Time(0)
-# listener.waitForTransform('map', base_link, t0, rospy.Duration(1))
-# ((x,y,z), rot) = listener.lookupTransform('map', base_link, t0)
-# euler = tf.transformations.euler_from_quaternion(rot)
-# reach_goal(x, y, euler[2] + pi)
-# print("G0 done")
-
-# t0 = rospy.Time(0)
-# listener.waitForTransform('map', base_link, t0, rospy.Duration(1))
-# ((x,y,z), rot) = listener.lookupTransform('map', base_link, t0)
-# euler = tf.transformations.euler_from_quaternion(rot)
-# reach_goal(x, y, euler[2] + pi)
-# print("G1 done")
 def rotate(vitesse=1):
     twist = Twist()
     twist.linear.x = 0
