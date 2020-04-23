@@ -12,6 +12,7 @@ import os
 import time
 import traceback
 import actionlib
+import rostime
 from move_base_msgs.msg import MoveBaseAction
 from TurtleBotMap import *
 from explorer import *
@@ -76,18 +77,18 @@ def callback(data):
         while erreur_x <= 0.001:
             t0 = rospy.get_rostime()
             print("Sec : {}".format(t0))
-            dt = rospy.Time(secs=3)
+            dt = rospy.Duration(secs=3))
             print("Duree d'arret : {}".format(dt))
             if i >= 1:
                 i += 1
-                t1 = rospy.get_rostime()
+                t1=rospy.get_rostime()
                 print(
                     "Seconde depuis debut arret : {}, seconde maintennt".format(t0, t1)
                 )
                 if t1 - t0 >= dt:
                     rotate()
                     remplissage_diff()
-                    nav_goals.go_to(0.0, 0.0, 0.0)
+                    nav_goals.go_to(3.0, 1.0, 0.0)
                 else:
                     # en attente
                     twist = Twist()
@@ -105,14 +106,17 @@ def callback(data):
                 # cmd_vel(erreur_x * k_l,erreur_y * k_r ) # to_do envoyer ces vitesses en s'inspirant du teleop_key
     else:
         rospy.loginfo("item lost !!!!!")
-        twist = Twist()
-        twist.linear.x = 0.0
-        twist.linear.y = 0.0
-        twist.linear.z = 0.0
-        twist.angular.x = 0.0
-        twist.angular.y = 0.0
-        twist.angular.z = 0.0
-        pub.publish(twist)
+        # twist = Twist()
+        # twist.linear.x = 0.0
+        # twist.linear.y = 0.0
+        # twist.linear.z = 0.0
+        # twist.angular.x = 0.0
+        # twist.angular.y = 0.0
+        # twist.angular.z = 0.0
+        # pub.publish(twist)
+
+        # go home
+        nav_goals.go_to(3.0, 1.0, 0.0)
 
         # rospy.spin()
 
