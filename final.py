@@ -31,8 +31,6 @@ if __name__ == "__main__":
         target_frame = "map"
         base_link = "base_link"
 
-        rospy.on_shutdown(nav_goals._shutdown)
-
         # test le temps
         sec = rospy.get_time()
         print("Sec : {}".format(sec))
@@ -59,6 +57,8 @@ if __name__ == "__main__":
 
         remplissage_diff()
         (x_im, y_im) = find_ppv()
+
+        rospy.on_shutdown(nav_goals._shutdown)
 
         while not (isnan(x_im) and isnan(y_im)) and not rospy.is_shutdown():
             (x, y, theta) = turtlebot_map.pix_to_pose((x_im, y_im, 0))
