@@ -71,7 +71,7 @@ def callback(data):
         # the purpose is to stop following it after 3s of none moving
         i = 0
         print("valeur de l'erreur en x : {} et valeur de i : {}".format(erreur_x, i))
-        while erreur_x == 0:
+        while erreur_x == 0.001:
             t0 = rospy.get_rostime()
             print("Sec : {}".format(t0))
             if i >= 1:
