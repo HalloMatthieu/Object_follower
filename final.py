@@ -4,9 +4,9 @@ import rospy
 import actionlib
 import traceback
 from simple_navigation_goals import simple_navigation_goals
-from TutleBotMap import *
+from TurtleBotMap import *
 from move_base_msgs.msg import *
-from nav_msgs.msg import GetMap
+from nav_msgs.srv import GetMap
 from math import pi, cos, sin, isnan
 from listener import *
 from explorer import *
@@ -22,6 +22,14 @@ if __name__ == "__main__":
         rospy.loginfo("Initializations done")
         client = actionlib.SimpleActionClient("move_base", MoveBaseAction)
         client.wait_for_server()
+
+        listener = tf.TransformListener()
+
+        cmd_vel = rospy.Publisher("cmd_vel", Twist, queue_size=10)
+
+        goal_number = 0
+        target_frame = "map"
+        base_link = "base_link"
 
         rospy.on_shutdown(nav_goals._shutdown)
 
