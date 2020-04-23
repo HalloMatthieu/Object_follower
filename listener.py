@@ -89,8 +89,8 @@ def callback(data):
                         t_debut, t_now
                     )
                 )
-                # if t_now - t_debut >= d:
-                if rospy.Timer(rospy.Duration(3), my_callback) is True:
+                if t_now - t_debut >= d:
+                    # if rospy.Timer(rospy.Duration(3), my_callback) is True:
                     rotate()
                     remplissage_diff()
                     nav_goals.go_to(-3.0, 1.0, 0.0)
