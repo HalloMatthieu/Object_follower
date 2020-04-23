@@ -114,7 +114,7 @@ def callback(data):
         twist.angular.z = 0.0
         pub.publish(twist)
 
-        rospy.spin()
+        # rospy.spin()
 
 
 def listener():
