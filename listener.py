@@ -78,7 +78,7 @@ def callback(data):
             print("Sec : {}".format(t0))
             if i >= 1:
                 i += 1
-                t1 = rospy.get_time()
+                t1 = rospy.get_rostime()
                 print(
                     "Seconde depuis debut arret : {}, seconde maintennt".format(t0, t1)
                 )
