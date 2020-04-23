@@ -167,7 +167,7 @@ if __name__ == "__main__":
         control_linear_vel = 0.0
         control_angular_vel = 0.0
 
-        while 1:
+        while not rospy.is_shutdown():
             listener()
 
         twist = Twist()
