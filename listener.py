@@ -74,14 +74,16 @@ def callback(data):
         i = 0
         print("valeur de l'erreur en x : {} et valeur de i : {}".format(erreur_x, i))
         while erreur_x <= 0.001:
-            t0 = rospy.get_rostime()
+            t_deb = rospy.get_rostime()
+            t0 = t_deb.to_sec()
             print("Sec : {}".format(t0))
             dt = rospy.Duration.from_sec(3)
             d = dt.to_sec()
             print("Duree d'arret : {}".format(d))
             if i >= 1:
                 i += 1
-                t1 = rospy.get_rostime()
+                t_now = rospy.get_rostime()
+                t1 = t_now.to_sec()
                 print(
                     "Seconde depuis debut arret : {}, seconde maintennt : {}".format(
                         t0, t1
