@@ -87,7 +87,7 @@ def callback(data):
                 if t1 - t0 >= dt:
                     rotate()
                     remplissage_diff()
-                    nav_goals.go_to(3.0, 1.0, 0.0)
+                    nav_goals.go_to(-3.0, 1.0, 0.0)
                 else:
                     # en attente
                     twist = Twist()
@@ -115,7 +115,7 @@ def callback(data):
         # pub.publish(twist)
 
         # go home
-        nav_goals.go_to(3.0, 1.0, 0.0)
+        nav_goals.go_to(-3.0, 1.0, 0.0)
 
         # rospy.spin()
 
