@@ -75,6 +75,7 @@ def callback(data):
         print("valeur de l'erreur en x : {} et valeur de i : {}".format(erreur_x, i))
         while erreur_x <= 0.001:
             t0 = rospy.get_time()
+            t_debut = t0
             print("Sec : {}".format(t0))
             dt = rospy.Duration.from_sec(3)
             d = dt.to_sec()
@@ -82,12 +83,13 @@ def callback(data):
             if i >= 1:
                 i += 1
                 t1 = rospy.get_time()
+                t_now = t1
                 print(
                     "Seconde depuis debut arret : {}, seconde maintenant : {}".format(
-                        t0, t1
+                        t_debut, t_now
                     )
                 )
-                if t1 - t0 >= d:
+                if t_now - t_debut >= d:
                     rotate()
                     remplissage_diff()
                     nav_goals.go_to(-3.0, 1.0, 0.0)
