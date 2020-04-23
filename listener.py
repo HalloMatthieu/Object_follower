@@ -76,13 +76,15 @@ def callback(data):
         while erreur_x <= 0.001:
             t0 = rospy.get_rostime()
             print("Sec : {}".format(t0))
+            dt = rospy.Time(secs=3)
+            print("Duree d'arret : {}".format(dt))
             if i >= 1:
                 i += 1
                 t1 = rospy.get_rostime()
                 print(
                     "Seconde depuis debut arret : {}, seconde maintennt".format(t0, t1)
                 )
-                if t1 - t0 >= 3:
+                if t1 - t0 >= dt:
                     rotate()
                     remplissage_diff()
                     nav_goals.go_to(0.0, 0.0, 0.0)
