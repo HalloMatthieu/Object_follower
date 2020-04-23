@@ -12,7 +12,6 @@ import os
 import time
 import traceback
 import actionlib
-import rostime
 from move_base_msgs.msg import MoveBaseAction
 from TurtleBotMap import *
 from explorer import *
@@ -77,11 +76,11 @@ def callback(data):
         while erreur_x <= 0.001:
             t0 = rospy.get_rostime()
             print("Sec : {}".format(t0))
-            dt = rospy.Duration(secs=3))
+            dt = rospy.Duration(secs=3)
             print("Duree d'arret : {}".format(dt))
             if i >= 1:
                 i += 1
-                t1=rospy.get_rostime()
+                t1 = rospy.get_rostime()
                 print(
                     "Seconde depuis debut arret : {}, seconde maintennt".format(t0, t1)
                 )
