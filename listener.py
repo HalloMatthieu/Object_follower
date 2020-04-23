@@ -78,7 +78,11 @@ def callback(data):
             print("Sec : {}".format(t0))
             if i >= 1:
                 i += 1
-                if rospy.get_rostime() - t0 >= 3:
+                t1 = rospy.get_time()
+                print(
+                    "Seconde depuis debut arret : {}, seconde maintennt".format(t0, t1)
+                )
+                if t1 - t0 >= 3:
                     rotate()
                     remplissage_diff()
                     nav_goals.go_to(0.0, 0.0, 0.0)
